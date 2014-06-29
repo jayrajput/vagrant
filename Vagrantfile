@@ -1,6 +1,14 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
+`ssh-add -l`
+
+if not $?.success?
+  puts 'Your SSH does not currently contain any keys (or is stopped.)'
+  puts 'Please start it and add your Github SSH key to continue.'  
+  exit 1
+end
+
 if not File.directory?("./dotfiles")
     `git clone git@github.com:jayrajput/dotfiles.git`
 end
