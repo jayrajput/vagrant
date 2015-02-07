@@ -19,6 +19,7 @@ end
 $script = <<SCRIPT
     /vagrant/dotfiles/install.py
     rpm -q ansible || sudo yum -y install ansible
+    ansible-playbook -i/vagrant/hosts setup.yml
 SCRIPT
 
 # Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
