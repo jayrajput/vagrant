@@ -2,7 +2,8 @@
 # vi: set ft=ruby :
 #
 # vagrant box add CentOS64x86_64 https://github.com/2creatives/vagrant-centos/releases/download/v6.4.2/centos64-x86_64-20140116.box
-#
+# git clone
+# vagrant up
 
 `ssh-add -l`
 
@@ -17,9 +18,18 @@ if not File.directory?("./dotfiles")
 end
 
 $script = <<SCRIPT
+    # move this to the ansible
     /vagrant/dotfiles/install.py
+
     rpm -q ansible || sudo yum -y install ansible
-    ansible-playbook -i/vagrant/hosts setup.yml
+
+    # vagrant mounts all the file with mode=777.
+    # ansible have problem using hosts file with mode=777
+    # so copy the hosts file and change mode to 666
+    cp /vagrant/hosts /tmp/hosts
+    chmod 666 /tmp/hosts
+
+    sudo ansible-playbook -i/tmp/hosts /vagrant/setup.yml
 SCRIPT
 
 # Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
@@ -31,7 +41,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # please see the online documentation at vagrantup.com.
 
   # Every Vagrant virtual environment requires a box to build off of.
-  config.vm.box = "mybox"
+  config.vm.box = "CentOS64x86_64"
 
   # SSH agent forwarding, useful for cloning git repo on the vm
   # config.ssh.forward_agent = true

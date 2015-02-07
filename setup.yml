@@ -2,4 +2,7 @@
 - hosts: localhost
   tasks:
     - name: Install tmux
-      yum: name=tmux state=present
+      yum: name={{ item }} state=present
+      with_items:
+        - tmux
+        - vim
