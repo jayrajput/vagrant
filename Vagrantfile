@@ -5,31 +5,8 @@
 # git clone
 # vagrant up
 
-`ssh-add -l`
-
-if not $?.success?
-  puts 'Your SSH does not currently contain any keys (or is stopped.)'
-  puts 'Please start it and add your Github SSH key to continue.'  
-  exit 1
-end
-
-if not File.directory?("./dotfiles")
-    `git clone git@github.com:jayrajput/dotfiles.git`
-end
-
 $script = <<SCRIPT
-    # move this to the ansible
-    /vagrant/dotfiles/install.py
-
-    rpm -q ansible || sudo yum -y install ansible
-
-    # vagrant mounts all the file with mode=777.
-    # ansible have problem using hosts file with mode=777
-    # so copy the hosts file and change mode to 666
-    cp /vagrant/hosts /tmp/hosts
-    chmod 666 /tmp/hosts
-
-    sudo ansible-playbook -i/tmp/hosts /vagrant/setup.yml
+    rpm -q ansible || yum -y install ansible
 SCRIPT
 
 # Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
@@ -38,13 +15,12 @@ VAGRANTFILE_API_VERSION = "2"
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Every Vagrant virtual environment requires a box to build off of.
   config.vm.box = "CentOS64x86_64"
-  config.vm.network "forwarded_port", guest: 8080, host: 8080
 
-  # SSH agent forwarding, useful for cloning git repo on the vm
-  # config.ssh.forward_agent = true
+  # Port forwarding for Jenkins
+  config.vm.network "forwarded_port", guest: 8080, host: 8080
 
   config.vm.provision "shell" do |s|
     s.inline     = $script
-    s.privileged = false
+    s.privileged = true
   end
 end
