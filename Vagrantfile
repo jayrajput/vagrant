@@ -1,11 +1,10 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 #
-# vagrant box add CentOS64x86_64 https://github.com/2creatives/vagrant-centos/releases/download/v6.4.2/centos64-x86_64-20140116.box
-# git clone
-# vagrant up
 
 $script = <<SCRIPT
+    chmod 600 /home/vagrant/.ssh/id_rsa
+    chmod 644 /home/vagrant/.ssh/id_rsa.pub
     rpm -q ansible || yum -y install ansible
 SCRIPT
 
@@ -18,6 +17,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   # Port forwarding for Jenkins
   config.vm.network "forwarded_port", guest: 8080, host: 8080
+
+  # plant my ssh keys
+  config.vm.provision "file" , source: "~/.ssh/id_rsa.pub", destination: "~/.ssh/id_rsa.pub"
+  config.vm.provision "file" , source: "~/.ssh/id_rsa"    , destination: "~/.ssh/id_rsa"
 
   config.vm.provision "shell" do |s|
     s.inline     = $script
