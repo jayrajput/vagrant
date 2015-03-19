@@ -17,6 +17,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   # Port forwarding for Jenkins
   config.vm.network "forwarded_port", guest: 8080, host: 8080
+  # Port forwarding for jekyll
+  config.vm.network "forwarded_port", guest: 4000, host: 4000
+  config.vm.network "private_network", ip: "192.168.3.33"
 
   # plant my ssh keys
   config.vm.provision "file" , source: "~/.ssh/id_rsa.pub", destination: "~/.ssh/id_rsa.pub"
